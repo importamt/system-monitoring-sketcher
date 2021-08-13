@@ -1,4 +1,3 @@
-import React from "react";
 import {HelloWorld, IHelloWorld} from "./HelloWorld";
 import {Meta, Story} from "@storybook/react";
 
