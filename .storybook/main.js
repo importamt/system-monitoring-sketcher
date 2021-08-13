@@ -1,4 +1,3 @@
-const {configure} = require("@storybook/react");
 module.exports = {
     core: {
         builder: "webpack5",
