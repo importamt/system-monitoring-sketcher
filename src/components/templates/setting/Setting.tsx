@@ -1,20 +1,25 @@
 import styled from "styled-components";
+import {SystemList} from "../../organisms";
+import {System} from "../../../store/system";
+import {Scrollbar} from "react-scrollbars-custom";
 
+export interface ISetting {
+    systems?: System[]
+}
 
-export const Setting = () => {
-
-
+export const Setting = ({systems}: ISetting) => {
     return <StyledSetting>
-        setting
+        <Scrollbar style={{width:'100%', height: '100%'}}>
+            <SystemList systems={systems}/>
+        </Scrollbar>
     </StyledSetting>
 }
 
 const StyledSetting = styled.aside`
   display: flex;
   flex: 1;
-  background: #66bf3c;
-  
-  min-width: 300px;
+
+  min-width: 200px;
   width: 100%;
   height: 100%;
 `
