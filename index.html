@@ -3,13 +3,20 @@
 <head>
     <title>System monitoring sketcher</title>
 </head>
-<body onload="SystemMonitoringSketcher('sketcher-root', {
-    width: 1280,
-    height: 720,
-    isMonitoring: false
-})">
+<body onload="init()">
 <div id="sketcher-root">
     Sketcher is loading...
 </div>
 </body>
+
+<script>
+    const init = () => {
+        SystemMonitoringSketcher('sketcher-root', {
+            width: 1280,
+            height: 720,
+            isMonitoring: false
+        })
+    }
+</script>
+
 </html>
