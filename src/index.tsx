@@ -3,6 +3,7 @@ import React from "react";
 import styled from "styled-components";
 import {Modifying, Monitoring} from "./pages";
 import {GlobalStyles} from "./styles";
+import {System} from "./store/system";
 
 interface IStyledSystemMonitoringSketcher {
     width: number | string,
@@ -10,13 +11,20 @@ interface IStyledSystemMonitoringSketcher {
 }
 
 export interface SystemMonitoringSketcherOptions extends IStyledSystemMonitoringSketcher {
-    isMonitoring: boolean
+    getSystems: () => System[],
+    setSystem: (systems: System) => void,
+    setSystems: (systems: System[]) => void,
+    // getChecks: () => Check[],
+    // getLinks: () => Link[],
+    // setLink: (link: Link) => void,
+    // setLinks: (links: Link[]) => void,
+    isMonitoring?: boolean,
 }
 
 const SystemMonitoringSketcher = (elementId: string, {
     width,
     height,
-    isMonitoring,
+    isMonitoring = true,
 }: SystemMonitoringSketcherOptions) => {
     const calculatedWidth = typeof width === 'number' ? `${width}px` : width ? width : '100%'
     const calculatedHeight = typeof height === 'number' ? `${height}px` : height ? height : '100%'
