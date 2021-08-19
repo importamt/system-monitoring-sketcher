@@ -11,7 +11,9 @@ module.exports = {
     mode: isProduction ? PRODUCTION : DEVELOPMENT,
     entry: './index.ts',
     output: {
-        path: `${__dirname}/dist/`
+        path: `${__dirname}/dist/`,
+        library: 'SystemMonitoringSketcher',
+        libraryTarget: 'var'
     },
     module: {
         rules: [
