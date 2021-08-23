@@ -13,3 +13,4 @@ export const RESOLUTION_TINY: IResolution = {width: '300px', height: '200px'}
 export const RESOLUTION_SD: IResolution = {width: '720px', height: '480px'}
 export const RESOLUTION_HD: IResolution = {width: '1280px', height: '720px'}
 export const RESOLUTION_FHD: IResolution = {width: '1920px', height: '1080px'}
+
