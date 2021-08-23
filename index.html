@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <link rel="icon" href="favicon.svg" sizes="any" type="image/svg+xml">
     <title>System monitoring sketcher</title>
 </head>
 <body onload="init()">
@@ -8,13 +9,59 @@
     Sketcher is loading...
 </div>
 </body>
-
 <script>
+    let systems = [
+        {
+            id: 'abc1',
+            name: 'HELLO1',
+            url: 'https://google.com',
+            x: 10,
+            y: 50,
+            isAssigned: true
+        }, {
+            id: 'abc2',
+            name: 'HELLO2',
+            url: 'https://google.com',
+            x: 10,
+            y: 50,
+            isAssigned: true
+        }, {
+            id: 'abc3',
+            name: 'HELLO3',
+            url: 'https://google.com',
+            x: 10,
+            y: 50,
+            isAssigned: true
+        },
+    ]
+
+    const getSystems = async () => {
+        return systems
+    }
+
+    const setSystem = async newSystem => {
+        const getSameId = system => system.id === newSystem.id
+        const system = systems.find(getSameId)
+        if (system) {
+            systems = [...systems.filter(system => system.id !== newSystem.id), newSystem]
+        } else {
+            systems = [...systems, newSystem]
+        }
+    }
+
+    const setSystems = async newSystems => {
+        newSystems.forEach(newSystem => setSystem(newSystem))
+    }
+
     const init = () => {
-        SystemMonitoringSketcher('sketcher-root', {
+        window.SystemMonitoringSketcher('sketcher-root', {
             width: 1280,
             height: 720,
-            isMonitoring: false
+            isMonitoring: false,
+            getSystems: getSystems.bind(systems),
+            setSystem: setSystem.bind(systems),
+            setSystems: setSystems.bind(systems),
+
         })
     }
 </script>
