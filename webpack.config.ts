@@ -12,8 +12,8 @@ module.exports = {
     entry: './index.ts',
     output: {
         path: `${__dirname}/dist/`,
-        library: 'SystemMonitoringSketcher',
-        libraryTarget: 'var'
+        // library: 'SystemMonitoringSketcher',
+        // libraryTarget: 'var',
     },
     module: {
         rules: [
