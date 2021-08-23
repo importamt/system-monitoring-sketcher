@@ -1,6 +1,6 @@
 import {useDrag} from "react-dnd";
 import styled from "styled-components";
-import {System} from "../../../store/system";
+import {System} from "../../../store";
 
 export interface ISystemListItem {
     system?: System

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {SystemList} from "../../organisms";
-import {System} from "../../../store/system";
+import {System} from "../../../store";
 import {Scrollbar} from "react-scrollbars-custom";
 
 export interface ISetting {

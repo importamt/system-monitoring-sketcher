@@ -1,4 +1,4 @@
-import {System} from "../../../store/system";
+import {System} from "../../../store";
 import styled from "styled-components";
 import {SystemListItem} from "../../molecules";
 

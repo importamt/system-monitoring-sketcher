@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from "react";
 import styled from "styled-components";
 import 'beautiful-react-diagrams/styles.css';
 import {createSchema, Diagram as BeautifulDiagram, useSchema} from 'beautiful-react-diagrams';
-import {System} from "../../../store/system";
+import {System} from "../../../store";
 import {useDrop} from "react-dnd";
 
 export interface IDiagram {
@@ -22,7 +22,7 @@ const initialSchema = createSchema({
         {input: 'node-1', output: 'node-4'},
     ]
 });
-export const Diagram = (props: IDiagram) => {
+export const Diagram = ({systems}: IDiagram) => {
     //useRef를 통해 ref값을 직접 정의하고 react-dnd의 drop함수를 적용한다.
     //diagram의 실 좌표를 얻기위해 getBoundingClientRect를 사용해야하기 떄문이다.
     const ref = useRef<HTMLElement>(null)
