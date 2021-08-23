@@ -1,51 +1,39 @@
-/**
- *
- */
 import styled from "styled-components";
 import {Diagram, Setting} from "../../components/templates";
-import {useState} from "react";
-import {System} from "../../store/system";
-import {DndProvider} from 'react-dnd'
-import {HTML5Backend} from "react-dnd-html5-backend";
+import {RootState, System} from "../../store";
+import {useMount} from "../../hooks/basic";
+import {getSystemsRequest, setSystemRequest} from "../../store/system/system-action";
+import {useDispatch, useSelector} from "react-redux";
 
 export interface IModifying {
-
 }
 
 export const Modifying = ({}: IModifying) => {
+    const dispatch = useDispatch()
+    useMount(() => {
+        dispatch(getSystemsRequest())
 
-    //Get Systems
-    const [systems, setSystems] = useState<System[]>([
-        {
-            id: 'abc1',
-            name: 'HELLO1',
-            url: 'https://google.com',
-            x: 10,
-            y: 50,
-            isAssigned: true
-        }, {
-            id: 'abc2',
-            name: 'HELLO2',
-            url: 'https://google.com',
-            x: 10,
-            y: 50,
-            isAssigned: true
-        }, {
-            id: 'abc3',
-            name: 'HELLO3',
-            url: 'https://google.com',
-            x: 10,
-            y: 50,
-            isAssigned: true
-        },
-    ])
-    //Get Links
+        //For test
+        //it will be removed...
+        setInterval(() => {
 
+            const system: System = {
+                id: `abc${Math.random() * 100000}`,
+                name: `HELLO: ${Math.random() * 100000}`,
+                x: 10,
+                y: 10,
+                isAssigned: false,
+                url: 'https://naver.com'
+            }
+
+            dispatch(setSystemRequest(system))
+        }, 10000)
+    })
+
+    const systems = useSelector((state: RootState) => state.system.systems)
     return <StyledModifying>
-        <DndProvider backend={HTML5Backend}>
-            <Setting systems={systems}/>
-            <Diagram systems={systems}/>
-        </DndProvider>
+        <Setting systems={systems}/>
+        <Diagram systems={systems}/>
     </StyledModifying>
 }
 
