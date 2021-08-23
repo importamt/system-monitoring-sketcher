@@ -1,7 +1,7 @@
 const webpack = require("webpack");
 module.exports = ({config}) => {
     config.module.rules.push({
-        test: /\.(ts|tsx)$/,
+        test: /\.(tsx)$/,
         use: [
             {
                 loader: require.resolve("babel-loader"),
@@ -12,7 +12,7 @@ module.exports = ({config}) => {
             require.resolve("react-docgen-typescript-loader"),
         ],
     });
-    config.resolve.extensions.push(".ts", ".tsx");
+    config.resolve.extensions.push(".tsx");
     config.plugins.push(new webpack.ProvidePlugin({
         'React': 'react',
     }));
