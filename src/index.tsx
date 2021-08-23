@@ -3,7 +3,11 @@ import React from "react";
 import styled from "styled-components";
 import {Modifying, Monitoring} from "./pages";
 import {GlobalStyles} from "./styles";
-import {System} from "./store/system";
+import {createStore, System} from "./store";
+import {Provider} from "react-redux";
+import {HTML5Backend} from "react-dnd-html5-backend";
+import {DndProvider} from "react-dnd";
+import {SystemApiInstance} from "./store/system";
 
 interface IStyledSystemMonitoringSketcher {
     width: number | string,
@@ -21,7 +25,11 @@ export interface SystemMonitoringSketcherOptions extends IStyledSystemMonitoring
     isMonitoring?: boolean,
 }
 
+const store = createStore()
 const SystemMonitoringSketcher = (elementId: string, {
+    getSystems,
+    setSystem,
+    setSystems,
     width,
     height,
     isMonitoring = true,
@@ -29,12 +37,20 @@ const SystemMonitoringSketcher = (elementId: string, {
     const calculatedWidth = typeof width === 'number' ? `${width}px` : width ? width : '100%'
     const calculatedHeight = typeof height === 'number' ? `${height}px` : height ? height : '100%'
 
+    SystemApiInstance.getSystems = getSystems
+    SystemApiInstance.setSystem = setSystem
+    SystemApiInstance.setSystems = setSystems
+
     ReactDOM.render(
-        <StyledSystemMonitoringSketcher
-            width={calculatedWidth} height={calculatedHeight}>
-            <GlobalStyles/>
-            {isMonitoring ? <Monitoring/> : <Modifying/>}
-        </StyledSystemMonitoringSketcher>
+        <Provider store={store}>
+            <DndProvider backend={HTML5Backend}>
+                <StyledSystemMonitoringSketcher
+                    width={calculatedWidth} height={calculatedHeight}>
+                    <GlobalStyles/>
+                    {isMonitoring ? <Monitoring/> : <Modifying/>}
+                </StyledSystemMonitoringSketcher>
+            </DndProvider>
+        </Provider>
         , document.getElementById(elementId))
     return 0
 }
