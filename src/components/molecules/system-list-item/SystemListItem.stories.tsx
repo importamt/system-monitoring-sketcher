@@ -1,7 +1,6 @@
 import {ISystemListItem, SystemListItem} from "./SystemListItem";
 import {Meta, Story} from "@storybook/react";
 import {RESOLUTION_TINY} from "../../../utils";
-import {GlobalStyles} from "../../../styles";
 
 export default {
     component: SystemListItem,
