@@ -1,6 +1,6 @@
-/**
- *
- */
+import {SystemApi} from "./system-api";
+
+
 export interface System {
     id: string,
     name: string,
@@ -15,3 +15,9 @@ export interface System {
     //Check system is assigned or not
     isAssigned: boolean,
 }
+
+export {FETCH_SYSTEMS} from './system-action'
+export {SystemReducer} from './system-reducer'
+export {SystemSaga} from './system-saga'
+
+export const SystemApiInstance = new SystemApi()
