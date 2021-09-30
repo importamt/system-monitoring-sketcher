@@ -8,6 +8,8 @@ import {Provider} from "react-redux";
 import {HTML5Backend} from "react-dnd-html5-backend";
 import {DndProvider} from "react-dnd";
 import {SystemApiInstance} from "./store/system";
+import {Check, CheckApiInstance} from "./store/check";
+import {Link, LinkApiInstance} from "./store/link";
 
 interface IStyledSystemMonitoringSketcher {
     width: number | string,
@@ -15,21 +17,26 @@ interface IStyledSystemMonitoringSketcher {
 }
 
 export interface SystemMonitoringSketcherOptions extends IStyledSystemMonitoringSketcher {
-    getSystems: () => System[],
-    setSystem: (systems: System) => void,
-    setSystems: (systems: System[]) => void,
-    // getChecks: () => Check[],
-    // getLinks: () => Link[],
-    // setLink: (link: Link) => void,
-    // setLinks: (links: Link[]) => void,
+    retrieveSystems: () => System[],
+    registerSystem: (systems: System) => void,
+    registerSystems: (systems: System[]) => void,
+
+    retrieveChecks: () => Check[],
+    retrieveLinks: () => Link[],
+    registerLink: (link: Link) => void,
+    registerLinks: (links: Link[]) => void,
     isMonitoring?: boolean,
 }
 
 const store = createStore()
 const SystemMonitoringSketcher = (elementId: string, {
-    getSystems,
-    setSystem,
-    setSystems,
+    retrieveSystems,
+    registerSystem,
+    registerSystems,
+    registerLinks,
+    registerLink,
+    retrieveLinks,
+    retrieveChecks,
     width,
     height,
     isMonitoring = true,
@@ -37,9 +44,15 @@ const SystemMonitoringSketcher = (elementId: string, {
     const calculatedWidth = typeof width === 'number' ? `${width}px` : width ? width : '100%'
     const calculatedHeight = typeof height === 'number' ? `${height}px` : height ? height : '100%'
 
-    SystemApiInstance.getSystems = getSystems
-    SystemApiInstance.setSystem = setSystem
-    SystemApiInstance.setSystems = setSystems
+    SystemApiInstance.retrieveSystems = retrieveSystems
+    SystemApiInstance.registerSystem = registerSystem
+    SystemApiInstance.registerSystems = registerSystems
+
+    LinkApiInstance.registerLinks = registerLinks
+    LinkApiInstance.registerLink = registerLink
+    LinkApiInstance.retrieveLinks = retrieveLinks
+
+    CheckApiInstance.retrieveChecks = retrieveChecks
 
     ReactDOM.render(
         <Provider store={store}>
@@ -52,7 +65,9 @@ const SystemMonitoringSketcher = (elementId: string, {
             </DndProvider>
         </Provider>
         , document.getElementById(elementId))
-    return 0
+    return {
+        // registerSystems: retrieveSystems
+    }
 }
 
 const StyledSystemMonitoringSketcher = styled.main<IStyledSystemMonitoringSketcher>`

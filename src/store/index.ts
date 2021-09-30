@@ -2,15 +2,21 @@ import {combineReducers, configureStore, EnhancedStore} from "@reduxjs/toolkit";
 import {all, fork} from "@redux-saga/core/effects";
 import createSagaMiddleware from "redux-saga";
 import {SystemReducer, SystemSaga} from "./system";
+import {LinkReducer, LinkSaga} from "./link";
+import {CheckReducer, CheckSaga} from "./check";
 
 // const viewReducer = combineReducers({})
 const rootReducer = combineReducers({
     // view: viewReducer,
     system: SystemReducer,
+    link: LinkReducer,
+    check: CheckReducer,
 })
 const rootSaga = function* () {
     yield all([
-        fork(SystemSaga)
+        fork(SystemSaga),
+        fork(LinkSaga),
+        fork(CheckSaga),
     ])
 }
 
