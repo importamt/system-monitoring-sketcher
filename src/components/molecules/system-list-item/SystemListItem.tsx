@@ -9,7 +9,7 @@ export interface ISystemListItem {
 export const SystemListItem = ({system}: ISystemListItem) => {
 
     const [{isDragging}, drag] = useDrag(() => ({
-        type: "HELLO",
+        type: "SKETCHER",
         item: system,
 
         collect: monitor => ({
