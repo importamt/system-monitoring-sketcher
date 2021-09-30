@@ -1,9 +1,11 @@
 import styled from "styled-components";
 import {Diagram, Setting} from "../../components/templates";
-import {RootState, System} from "../../store";
-import {useMount} from "../../hooks/basic";
-import {getSystemsRequest, setSystemRequest} from "../../store/system/system-action";
+import {RootState} from "../../store";
+import {useMount} from "../../hooks";
+import {retrieveSystemsRequest} from "../../store/system";
 import {useDispatch, useSelector} from "react-redux";
+import {retrieveLinksRequest} from "../../store/link";
+import {retrieveChecksRequest} from "../../store/check";
 
 export interface IModifying {
 }
@@ -11,29 +13,17 @@ export interface IModifying {
 export const Modifying = ({}: IModifying) => {
     const dispatch = useDispatch()
     useMount(() => {
-        dispatch(getSystemsRequest())
-
-        //For test
-        //it will be removed...
-        setInterval(() => {
-
-            const system: System = {
-                id: `abc${Math.random() * 100000}`,
-                name: `HELLO: ${Math.random() * 100000}`,
-                x: 10,
-                y: 10,
-                isAssigned: false,
-                url: 'https://naver.com'
-            }
-
-            dispatch(setSystemRequest(system))
-        }, 10000)
+        dispatch(retrieveSystemsRequest())
+        dispatch(retrieveLinksRequest())
+        dispatch(retrieveChecksRequest())
     })
 
     const systems = useSelector((state: RootState) => state.system.systems)
+    const links = useSelector((state: RootState) => state.link.links)
+
     return <StyledModifying>
-        <Setting systems={systems}/>
-        <Diagram systems={systems}/>
+        <Setting systems={systems?.filter(system => system.isAssigned === false)}/>
+        <Diagram systems={systems?.filter(system => system.isAssigned === true)} links={links}/>
     </StyledModifying>
 }
 
