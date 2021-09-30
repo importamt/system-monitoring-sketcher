@@ -1,22 +1,25 @@
 import {createAction} from "@reduxjs/toolkit";
-import {System} from "./index";
+import {System} from ".";
 import {getAsyncActions} from "../../utils";
 
 const prefix = 'system'
-export const FETCH_SYSTEMS = `${prefix}/SET_SYSTEMS`
-export const fetchSystems = createAction<System[]>(FETCH_SYSTEMS)
+export const SET_SYSTEMS = `${prefix}/SET_SYSTEMS`
+export const setSystems = createAction<System[]>(SET_SYSTEMS)
 
-export const GET_SYSTEMS = getAsyncActions(`${prefix}/GET_SYSTEMS`)
-export const getSystemsRequest = createAction(GET_SYSTEMS.request)
-export const getSystemsSuccess = createAction<System[]>(GET_SYSTEMS.success)
-export const getSystemsFail = createAction<any>(GET_SYSTEMS.fail)
+export const SET_SYSTEM = `${prefix}/SET_SYSTEM`
+export const setSystem = createAction<System>(SET_SYSTEM)
 
-export const SET_SYSTEM = getAsyncActions(`${prefix}/SET_SYSTEM`)
-export const setSystemRequest = createAction<System>(SET_SYSTEM.request)
-export const setSystemSuccess = createAction(SET_SYSTEM.success)
-export const setSystemFail = createAction<any>(SET_SYSTEM.fail)
+export const RETRIEVE_SYSTEMS = getAsyncActions(`${prefix}/RETRIEVE_SYSTEMS`)
+export const retrieveSystemsRequest = createAction(RETRIEVE_SYSTEMS.request)
+export const retrieveSystemsSuccess = createAction<System[]>(RETRIEVE_SYSTEMS.success)
+export const retrieveSystemsFail = createAction<any>(RETRIEVE_SYSTEMS.fail)
 
-export const SET_SYSTEMS = getAsyncActions(`${prefix}/SET_SYSTEMS`)
-export const setSystemsRequest = createAction<System>(SET_SYSTEMS.request)
-export const setSystemsSuccess = createAction(SET_SYSTEMS.success)
-export const setSystemsFail = createAction<any>(SET_SYSTEMS.fail)
+export const REGISTER_SYSTEM = getAsyncActions(`${prefix}/REGISTER_SYSTEM`)
+export const registerSystemRequest = createAction<System>(REGISTER_SYSTEM.request)
+export const registerSystemSuccess = createAction(REGISTER_SYSTEM.success)
+export const registerSystemFail = createAction<any>(REGISTER_SYSTEM.fail)
+
+export const REGISTER_SYSTEMS = getAsyncActions(`${prefix}/REGISTER_SYSTEMS`)
+export const registerSystemsRequest = createAction<System>(REGISTER_SYSTEMS.request)
+export const registerSystemsSuccess = createAction(REGISTER_SYSTEMS.success)
+export const registerSystemsFail = createAction<any>(REGISTER_SYSTEMS.fail)

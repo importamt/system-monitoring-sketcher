@@ -1,39 +1,33 @@
 import {System} from "./index";
 
 export class SystemApi {
-    private _getSystems: () => System[] = () => {
+    private _retrieveSystems: () => System[] = () => {
         console.warn("please implements getSystems")
         return []
     }
-
-    get getSystems(): () => System[] {
-        return this._getSystems;
+    get retrieveSystems(): () => System[] {
+        return this._retrieveSystems;
+    }
+    set retrieveSystems(value: () => System[]) {
+        this._retrieveSystems = value;
     }
 
-    set getSystems(value: () => System[]) {
-        this._getSystems = value;
-    }
-
-    private _setSystem: (systems: System) => void = () => {
+    private _registerSystem: (systems: System) => void = (systems: System) => {
         console.warn("please implements setSystem")
     }
-
-    get setSystem(): (systems: System) => void {
-        return this._setSystem;
+    get registerSystem(): (systems: System) => void {
+        return this._registerSystem;
+    }
+    set registerSystem(value: (systems: System) => void) {
+        this._registerSystem = value;
     }
 
-    set setSystem(value: (systems: System) => void) {
-        this._setSystem = value;
+    private _registerSystems: (systems: System[]) => void = (systems: System[]) => console.warn("please implements setSystems")
+    get registerSystems(): (systems: System[]) => void {
+        return this._registerSystems;
     }
-
-    private _setSystems: (systems: System[]) => void = () => console.warn("please implements setSystems")
-
-    get setSystems(): (systems: System[]) => void {
-        return this._setSystems;
-    }
-
-    set setSystems(value: (systems: System[]) => void) {
-        this._setSystems = value;
+    set registerSystems(value: (systems: System[]) => void) {
+        this._registerSystems = value;
     }
 }
 

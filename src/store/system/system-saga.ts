@@ -1,70 +1,79 @@
 import {all, call, put, takeLatest} from "@redux-saga/core/effects";
 import {PayloadAction} from "@reduxjs/toolkit";
-import {System, SystemApiInstance} from "./index";
 import {
-    fetchSystems,
-    GET_SYSTEMS,
-    getSystemsFail,
-    getSystemsRequest,
-    getSystemsSuccess,
-    SET_SYSTEM,
-    SET_SYSTEMS,
-    setSystemFail,
-    setSystemSuccess
-} from "./system-action";
+    REGISTER_SYSTEM,
+    REGISTER_SYSTEMS,
+    registerSystemFail,
+    registerSystemsFail,
+    registerSystemsSuccess,
+    registerSystemSuccess,
+    RETRIEVE_SYSTEMS,
+    retrieveSystemsFail,
+    retrieveSystemsRequest,
+    retrieveSystemsSuccess,
+    setSystems,
+    System,
+    SystemApiInstance
+} from ".";
 
-export const handleGetSystems = function* () {
+export const handleRetrieveSystems = function* () {
     try {
-        const systems: System[] = yield call(SystemApiInstance.getSystems)
-        console.log("SYSTEM SAGA ", systems)
-        yield put(getSystemsSuccess(systems))
+        const systems: System[] = yield call(SystemApiInstance.retrieveSystems)
+        yield put(retrieveSystemsSuccess(systems))
     } catch (e) {
-        yield put(getSystemsFail(e))
+        yield put(retrieveSystemsFail(e))
     }
 }
-const handleGetSystemsSuccess = function* (action: PayloadAction<System[]>) {
-    yield put(fetchSystems(action.payload))
+const handleRetrieveSystemsSuccess = function* (action: PayloadAction<System[]>) {
+    yield put(setSystems(action.payload))
 }
-const handleGetSystemsFail = function* (error: PayloadAction<any>) {
+const handleRetrieveSystemsFail = function* (error: PayloadAction<any>) {
     console.error("put redux systems FAIL. it will be []", error.payload)
-    yield put(fetchSystems([]))
+    yield put(setSystems([]))
 }
 
-const handleSetSystem = function* (action: PayloadAction<System>) {
+const handleRegisterSystem = function* (action: PayloadAction<System>) {
     try {
-        console.log("SET SYSTEM : ", action.payload)
-        yield call(SystemApiInstance.setSystem, action.payload)
-
-        yield put(setSystemSuccess())
+        yield call(SystemApiInstance.registerSystem, action.payload)
+        yield put(registerSystemSuccess())
     } catch (e) {
-        yield put(setSystemFail(e))
+        yield put(registerSystemFail(e))
     }
 }
-const handleSetSystemSuccess = function* () {
-    yield put(getSystemsRequest())
+const handleRegisterSystemSuccess = function* () {
+    yield put(retrieveSystemsRequest())
 }
-const handleSetSystemFail = function* () {
+const handleRegisterSystemFail = function* (action: PayloadAction<any>) {
+    console.error("register System Fail: ", action.payload)
 }
 
-const handleSetSystems = function* () {
+const handleRegisterSystems = function* (action: PayloadAction<System[]>) {
+    try {
+        yield call(SystemApiInstance.registerSystems, action.payload)
+        yield put(registerSystemsSuccess())
+    } catch (e) {
+        yield put(registerSystemsFail(e))
+    }
 }
-const handleSetSystemsSuccess = function* () {
+const handleRegisterSystemsSuccess = function* () {
+    yield put(retrieveSystemsRequest())
 }
-const handleSetSystemsFail = function* () {
+const handleRegisterSystemsFail = function* (action: PayloadAction<any>) {
+    console.error("register Systems Fail: ", action.payload)
 }
 
 const watchSystem = function* () {
-    yield takeLatest(GET_SYSTEMS.request, handleGetSystems)
-    yield takeLatest(GET_SYSTEMS.success, handleGetSystemsSuccess)
-    yield takeLatest(GET_SYSTEMS.fail, handleGetSystemsFail)
+    yield takeLatest(RETRIEVE_SYSTEMS.request, handleRetrieveSystems)
+    yield takeLatest(RETRIEVE_SYSTEMS.success, handleRetrieveSystemsSuccess)
+    yield takeLatest(RETRIEVE_SYSTEMS.fail, handleRetrieveSystemsFail)
 
-    yield takeLatest(SET_SYSTEM.request, handleSetSystem)
-    yield takeLatest(SET_SYSTEM.success, handleSetSystemSuccess)
-    yield takeLatest(SET_SYSTEM.fail, handleSetSystemFail)
+    yield takeLatest(REGISTER_SYSTEM.request, handleRegisterSystem)
+    yield takeLatest(REGISTER_SYSTEM.success, handleRegisterSystemSuccess)
+    yield takeLatest(REGISTER_SYSTEM.fail, handleRegisterSystemFail)
 
-    yield takeLatest(SET_SYSTEMS.request, handleSetSystems)
-    yield takeLatest(SET_SYSTEMS.success, handleSetSystemsSuccess)
-    yield takeLatest(SET_SYSTEMS.fail, handleSetSystemsFail)
+    yield takeLatest(REGISTER_SYSTEMS.request, handleRegisterSystems)
+    yield takeLatest(REGISTER_SYSTEMS.success, handleRegisterSystemsSuccess)
+    yield takeLatest(REGISTER_SYSTEMS.fail, handleRegisterSystemsFail)
 }
 
 export const SystemSaga = function* () {

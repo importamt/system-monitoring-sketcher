@@ -16,7 +16,7 @@ export interface System {
     isAssigned: boolean,
 }
 
-export {FETCH_SYSTEMS} from './system-action'
+export * from './system-action'
 export {SystemReducer} from './system-reducer'
 export {SystemSaga} from './system-saga'
 
