@@ -10,36 +10,26 @@
 </div>
 </body>
 <script>
-    let systems = [
-        {
-            id: 'abc1',
-            name: 'HELLO1',
-            url: 'https://google.com',
-            x: 10,
-            y: 50,
-            isAssigned: true
-        }, {
-            id: 'abc2',
-            name: 'HELLO2',
-            url: 'https://google.com',
-            x: 10,
-            y: 50,
-            isAssigned: true
-        }, {
-            id: 'abc3',
-            name: 'HELLO3',
-            url: 'https://google.com',
-            x: 10,
-            y: 50,
-            isAssigned: true
-        },
-    ]
+    /**
+     * 외부 시스템이 하는 데이터 제공 및 수정 기능을 mocking 했습니다.
+     * 이 기능은 DB를 포함한 외부 시스템에서 제공해야합니다.
+     */
 
-    const getSystems = async () => {
-        return systems
+    const SYSTEMS_COUNT = 10
+    const LINKS_COUNT = 10
+
+    let systems = Array.from({length: SYSTEMS_COUNT}).map((_, index) => ({
+        id: `system_id_${index}`,
+        name: `system_${index}`,
+        url: 'https://google.com',
+        x: Math.floor(Math.random() * 500),
+        y: Math.floor(Math.random() * 300),
+        isAssigned: Math.floor(Math.random() * 2) % 2 === 0
+    }))
+    const retrieveSystems = async () => {
+        return [...systems]
     }
-
-    const setSystem = async newSystem => {
+    const registerSystem = async newSystem => {
         const getSameId = system => system.id === newSystem.id
         const system = systems.find(getSameId)
         if (system) {
@@ -48,20 +38,75 @@
             systems = [...systems, newSystem]
         }
     }
-
-    const setSystems = async newSystems => {
-        newSystems.forEach(newSystem => setSystem(newSystem))
+    const registerSystems = async newSystems => {
+        newSystems.forEach(newSystem => registerSystem(newSystem))
     }
 
-    const init = () => {
+    const shuffle = (array) => {
+        return [...array].sort(() => 0.5 - Math.random());
+    }
+    const shuffledSystems = shuffle(systems?.filter(system => system.isAssigned === true))
+    let links = Array.from({length: shuffledSystems.length}).map((_, index) => ({
+        id: `link_id_${index}`,
+        sourceId: shuffledSystems[index].id+'_port'+Math.round(Math.random() * 8),
+        targetId: shuffledSystems[SYSTEMS_COUNT - 1 > index ? index : 0].id+'_port'+Math.round(Math.random() * 8)
+    }))
+    const retrieveLinks = async () => {
+        return [...links]
+    }
+    const registerLink = async newLink => {
+        const getSameId = link => link.id === newLink.id
+        const link = links.find(getSameId)
+        if (link) {
+            links = [...links.filter(link => link.id !== newLink.id), newLink]
+        } else {
+            links = [...links, newLink]
+        }
+    }
+    const registerLinks = async newLinks => {
+        newLinks?.forEach(newLink => registerLink(newLink))
+    }
+
+
+    const CheckStatus = [
+        'SUCCESS',
+        'FAIL',
+        'EXPIRED',
+        'NO_RECORDS',
+    ]
+
+    const checks =
+        //systems
+        Array.from({length: SYSTEMS_COUNT}).map((_, index) => ({
+            id: `check_id_${index}`,
+            targetId: systems[index],
+            isSystem: true,
+            status: CheckStatus[Math.floor(Math.random() * CheckStatus.length)]
+        })).concat(
+            Array.from({length: LINKS_COUNT}).map((_, index) => ({
+                id: `check_id_${index + SYSTEMS_COUNT}`,
+                targetId: systems[index],
+                isSystem: false,
+                status: CheckStatus[Math.floor(Math.random() * CheckStatus.length)]
+            }))
+        )
+
+    const retrieveChecks = () => {
+        return [...checks]
+    }
+
+    const init = async () => {
         window.SystemMonitoringSketcher('sketcher-root', {
             width: 1280,
             height: 720,
             isMonitoring: false,
-            getSystems: getSystems.bind(systems),
-            setSystem: setSystem.bind(systems),
-            setSystems: setSystems.bind(systems),
-
+            retrieveSystems: retrieveSystems,
+            registerSystem: registerSystem,
+            registerSystems: registerSystems,
+            retrieveLinks: retrieveLinks,
+            registerLinks: registerLinks,
+            registerLink: registerLink,
+            retrieveChecks: retrieveChecks
         })
     }
 </script>
