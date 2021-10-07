@@ -5,10 +5,12 @@
     <title>System monitoring sketcher</title>
 </head>
 <body onload="init()">
+<div>
+    <button id="botemButton">hello</button>
+</div>
 <div id="sketcher-root">
     Sketcher is loading...
 </div>
-</body>
 <script>
     /**
      * 외부 시스템이 하는 데이터 제공 및 수정 기능을 mocking 했습니다.
@@ -22,8 +24,8 @@
         id: `system_id_${index}`,
         name: `system_${index}`,
         url: 'https://google.com',
-        x: Math.floor(Math.random() * 500),
-        y: Math.floor(Math.random() * 300),
+        x: Math.floor(Math.random() * 1000),
+        y: Math.floor(Math.random() * 600),
         isAssigned: Math.floor(Math.random() * 2) % 2 === 0
     }))
     const retrieveSystems = async () => {
@@ -39,6 +41,7 @@
         }
     }
     const registerSystems = async newSystems => {
+        console.log("BEF", newSystems)
         newSystems.forEach(newSystem => registerSystem(newSystem))
     }
 
@@ -48,8 +51,8 @@
     const shuffledSystems = shuffle(systems?.filter(system => system.isAssigned === true))
     let links = Array.from({length: shuffledSystems.length}).map((_, index) => ({
         id: `link_id_${index}`,
-        sourceId: shuffledSystems[index].id+'_port'+Math.round(Math.random() * 8),
-        targetId: shuffledSystems[SYSTEMS_COUNT - 1 > index ? index : 0].id+'_port'+Math.round(Math.random() * 8)
+        sourceId: shuffledSystems[index].id,
+        targetId: shuffledSystems[shuffledSystems.length - 1 > index ? index + 1 : 0].id
     }))
     const retrieveLinks = async () => {
         return [...links]
@@ -71,32 +74,35 @@
     const CheckStatus = [
         'SUCCESS',
         'FAIL',
-        'EXPIRED',
-        'NO_RECORDS',
     ]
 
     const checks =
         //systems
         Array.from({length: SYSTEMS_COUNT}).map((_, index) => ({
             id: `check_id_${index}`,
-            targetId: systems[index],
+            sourceId: systems[index].id,
+            targetId: systems[index].id,
             isSystem: true,
+            checkTime: new Date().getTime(),
             status: CheckStatus[Math.floor(Math.random() * CheckStatus.length)]
         })).concat(
-            Array.from({length: LINKS_COUNT}).map((_, index) => ({
+            Array.from({length: links.length}).map((_, index) => ({
                 id: `check_id_${index + SYSTEMS_COUNT}`,
-                targetId: systems[index],
+                sourceId: links[index].sourceId,
+                targetId: links[index].targetId,
                 isSystem: false,
+                checkTime: new Date().getTime(),
                 status: CheckStatus[Math.floor(Math.random() * CheckStatus.length)]
             }))
         )
 
     const retrieveChecks = () => {
+        console.log("BEF CHECK", checks)
         return [...checks]
     }
 
     const init = async () => {
-        window.SystemMonitoringSketcher('sketcher-root', {
+        const myInstance = SystemMonitoringSketcher('sketcher-root', {
             width: 1280,
             height: 720,
             isMonitoring: false,
@@ -108,7 +114,13 @@
             registerLink: registerLink,
             retrieveChecks: retrieveChecks
         })
+
+        document.getElementById('botemButton').addEventListener('click', () => {
+            myInstance.save()
+        })
+
     }
 </script>
+</body>
 
 </html>
