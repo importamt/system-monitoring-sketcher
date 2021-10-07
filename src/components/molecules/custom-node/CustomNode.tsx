@@ -1,15 +1,22 @@
 import styled from "styled-components";
 import {Node} from "beautiful-react-diagrams/@types/DiagramSchema";
 import {System} from "../../../store";
-import React from "react";
+import React, {useContext} from "react";
+import {IsMonitoringContext} from "../../../index";
 
-export const CustomNode = ({inputs, content}: Omit<Node<System>, 'coordinates'>) => <StyledNode>
-    {content}
+export const CustomNode = ({inputs, content, className, data}: Omit<Node<System>, 'coordinates'>) => {
+    const isMonitoring = useContext(IsMonitoringContext)
 
-    {inputs}
-</StyledNode>
+    return <StyledNode className={className}>
 
-const StyledNode = styled.figure`
+        {content}
+        {inputs}
+
+        { !isMonitoring && <button data-system-id={data?.id} className={'delete'}>x</button>}
+    </StyledNode>
+}
+
+export const StyledNode = styled.figure`
   background: #dae1e7;
   border-radius: .25rem;
   padding: .5rem;
@@ -19,6 +26,22 @@ const StyledNode = styled.figure`
   display: flex;
   justify-content: center;
   align-items: center;
+  
+  & > button.delete {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    right: 20px;
+    top: 20px;
+    
+    width: 1em;
+    height: 1em;
+    border-radius: 20px;
+    border: none;
+    position: absolute;
+  }
   
   & div.bi-diagram-port {
     width: 1.25rem;
