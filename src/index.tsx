@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom";
-import React from "react";
+import React, {createContext} from "react";
 import styled from "styled-components";
 import {Modifying, Monitoring} from "./pages";
 import {GlobalStyles} from "./styles";
@@ -7,9 +7,9 @@ import {createStore, System} from "./store";
 import {Provider} from "react-redux";
 import {HTML5Backend} from "react-dnd-html5-backend";
 import {DndProvider} from "react-dnd";
-import {SystemApiInstance} from "./store/system";
+import {registerSystemsRequest, SystemApiInstance} from "./store/system";
 import {Check, CheckApiInstance} from "./store/check";
-import {Link, LinkApiInstance} from "./store/link";
+import {Link, LinkApiInstance, registerLinksRequest} from "./store/link";
 
 interface IStyledSystemMonitoringSketcher {
     width: number | string,
@@ -29,6 +29,8 @@ export interface SystemMonitoringSketcherOptions extends IStyledSystemMonitoring
 }
 
 const store = createStore()
+export const IsMonitoringContext = createContext<boolean>(true)
+
 const SystemMonitoringSketcher = (elementId: string, {
     retrieveSystems,
     registerSystem,
@@ -54,19 +56,28 @@ const SystemMonitoringSketcher = (elementId: string, {
 
     CheckApiInstance.retrieveChecks = retrieveChecks
 
+
     ReactDOM.render(
         <Provider store={store}>
             <DndProvider backend={HTML5Backend}>
-                <StyledSystemMonitoringSketcher
-                    width={calculatedWidth} height={calculatedHeight}>
-                    <GlobalStyles/>
-                    {isMonitoring ? <Monitoring/> : <Modifying/>}
-                </StyledSystemMonitoringSketcher>
+                <IsMonitoringContext.Provider value={isMonitoring}>
+                    <StyledSystemMonitoringSketcher
+                        width={calculatedWidth} height={calculatedHeight}>
+                        <GlobalStyles/>
+                        {isMonitoring ? <Monitoring/> : <Modifying/>}
+                    </StyledSystemMonitoringSketcher>
+                </IsMonitoringContext.Provider>
             </DndProvider>
         </Provider>
         , document.getElementById(elementId))
     return {
-        // registerSystems: retrieveSystems
+        save: () => {
+            const systems = store.getState().system.systems
+            const links = store.getState().link.links
+
+            systems && store.dispatch(registerSystemsRequest(systems))
+            links && store.dispatch(registerLinksRequest(links))
+        }
     }
 }
 
