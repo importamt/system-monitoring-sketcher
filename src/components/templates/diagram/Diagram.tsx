@@ -1,88 +1,159 @@
-import React, {useEffect, useRef} from "react";
+import React, {useContext, useEffect, useRef} from "react";
 import styled from "styled-components";
 import 'beautiful-react-diagrams/styles.css';
-import {createSchema, Diagram as BeautifulDiagram, useSchema} from 'beautiful-react-diagrams';
+import {Diagram as BeautifulDiagram, useSchema} from 'beautiful-react-diagrams';
 import {System} from "../../../store";
 import {useDrop} from "react-dnd";
-import {Link} from "../../../store/link";
+import {Link, setLinks} from "../../../store/link";
 import {Check} from "../../../store/check";
 import {useDispatch} from "react-redux";
 import {setSystem} from "../../../store/system";
 import {CustomNode} from "../../molecules";
 import {useMount} from "../../../hooks";
-
-// import useSchema from "../../../types/beautiful-react-diagrams/useSchema";
+import {DiagramSchema} from "beautiful-react-diagrams/@types/DiagramSchema";
+import {useDebounce} from "../../../hooks/debounce";
+import {IsMonitoringContext} from "../../../index";
+import {CHECK_COLORS, getCheckColor} from "../../../functions/getCheckColor";
+import {StyledNode} from "../../molecules/custom-node/CustomNode";
 
 export interface IDiagram {
     systems?: System[],
     links?: Link[],
-    checks?: Check[]
+    checks?: Check[],
 }
 
-const initialSchema = createSchema<System>({
+const initialSchema = {
     nodes: [],
     links: []
-})
+} as DiagramSchema<System>
 
 export const Diagram = ({systems, links, checks}: IDiagram) => {
+    const isMonitoring = useContext(IsMonitoringContext)
     const dispatch = useDispatch()
 
     //useRef를 통해 ref값을 직접 정의하고 react-dnd의 drop함수를 적용한다.
     //diagram의 실 좌표를 얻기위해 getBoundingClientRect를 사용해야하기 떄문이다.
     const ref = useRef<HTMLElement>(null)
-    const [schema, {onChange, addNode, removeNode, connect}] = useSchema(initialSchema)
 
+    const deleteNode = (event: React.MouseEvent<HTMLElement>) => {
+        if (!systems) return
+        const deleteButton = event.target as HTMLButtonElement
+        if (deleteButton.tagName !== 'BUTTON') return
+        const systemId = deleteButton.dataset.systemId
+
+        const system = systems.find(system => system.id === systemId)
+
+        if (system) {
+            links && dispatch(setLinks(
+                links.filter(link => link.targetId !== system.id && link.sourceId !== system.id)
+            ))
+            dispatch(setSystem({...system, x: 0, y: 0, isAssigned: false}))
+        }
+    }
     useMount(() => {
         //Drag and Drop의 Drop 설정
-        drop(ref)
+        if (!isMonitoring) {
+            drop(ref)
+        }
     })
 
-    useEffect(() => {
+    const [schema, {onChange}] = useSchema(initialSchema)
+    const debouncedSchema: DiagramSchema<System> = useDebounce(schema, 500)
+
+    !isMonitoring && useEffect(() => {
+        const systemMap = debouncedSchema.nodes.map(node => ({
+            ...node.data!,
+            x: node.coordinates[0],
+            y: node.coordinates[1]
+        })).reduce((systemMap, system: System) => {
+            systemMap[system.id] = system
+            return systemMap
+        }, {} as { [key: string]: System })
+
         systems?.forEach(system => {
-            addNode({
-                id: system.id,
-                content: system.name,
-                coordinates: [system.x, system.y],
-                render: CustomNode,
-                inputs: Array.from({length: 8}).map((_, index) => ({
-                    id: system.id + `_port${index}`,
-                })),
-                outputs: []
-            })
-        })
-
-        return () => {
-            systems?.forEach(system => {
-                removeNode({
-                    id: system.id,
-                    content: system.name,
-                    coordinates: [system.x, system.y],
-                    render: CustomNode,
-                    inputs: Array.from({length: 8}).map((_, index) => ({
-                        id: system.id + `_port${index}`,
-                    })),
-                    outputs: []
-
-                })
-            })
-        }
-
-
-    }, [systems])
-
-    useEffect(() => {
-        links?.forEach(link => {
-            if( link.sourceId !== link.targetId ) {
-                console.log("LINK : ", link)
-                connect(link.sourceId, link.targetId)
+            const changedSystem = systemMap[system.id]
+            if (
+                changedSystem.x !== system.x ||
+                changedSystem.y !== system.y ||
+                changedSystem.url !== system.url
+            ) {
+                dispatch(setSystem({
+                    ...system,
+                    x: changedSystem.x,
+                    y: changedSystem.y,
+                    url: changedSystem.url,
+                }))
             }
         })
-    }, [links])
+
+        const changedLinks: Link[] = debouncedSchema.links!.map(link => {
+
+            const sourceId = link.input.split("_port")[0]
+            const targetId = link.output.split("_port")[0]
+            const id = sourceId + targetId
+
+            return {id, sourceId, targetId} as Link
+        })
+        const filteredLinks = Object.values(changedLinks.reduce((links, link) => {
+            links[link.id] = link
+            return links
+        }, {} as { [key: string]: Link }))
+
+        if (links) {
+            const intersectionBetweenChangedLinksAndLinks =
+                links.filter(link => changedLinks.some(changedLink => link.id === changedLink.id))
+            if (intersectionBetweenChangedLinksAndLinks.length !== links.length ||
+                intersectionBetweenChangedLinksAndLinks.length !== changedLinks.length) {
+                dispatch(setLinks(filteredLinks))
+            }
+
+        }
+    }, [debouncedSchema])
+
+    useEffect(() => {
+        const now = new Date()
+        const checkMap = checks?.reduce((checkMap, check) => {
+            checkMap[check.sourceId + check.targetId] = check
+            return checkMap
+        }, {} as { [key: string]: Check })
+
+        onChange({
+            links: links ?
+                links?.map(link => {
+                    const check = checkMap ? checkMap[link.sourceId + link.targetId] : undefined
+                    const color = isMonitoring ? getCheckColor(now.getTime(), check) : ''
+                    return {
+                        input: link.sourceId,
+                        output: link.targetId,
+                        readonly: isMonitoring,
+                        className: color,
+                    }
+                })
+                : [],
+            nodes: systems ?
+                systems.map(system => {
+                    const check = checkMap ? checkMap[system.id + system.id] : undefined
+                    const color = isMonitoring ? getCheckColor(now.getTime(), check) : ''
+                    return {
+                        id: system.id,
+                        disableDrag: isMonitoring,
+                        content: system.name,
+                        coordinates: [system.x, system.y],
+                        render: CustomNode,
+                        className: color,
+                        data: system,
+                        inputs: isMonitoring ? [] : Array.from({length: 8}).map((_, index) => ({
+                            id: system.id + `_port_${index}`,
+                        })),
+                        outputs: []
+                    }
+                }) : []
+        })
+    }, [systems, links])
 
     const [{canDrop, isOver}, drop] = useDrop(() => ({
         accept: "SKETCHER",
         drop: (system: System, monitor) => {
-            dispatch(setSystem({...system, isAssigned: true}))
             const dropOffset = monitor.getClientOffset()
             const diagramOffset = ref.current?.getBoundingClientRect()
 
@@ -92,16 +163,8 @@ export const Diagram = ({systems, links, checks}: IDiagram) => {
                 y: dropOffset.y - diagramOffset.y
             }
 
-            addNode({
-                id: system.id,
-                content: system.name,
-                coordinates: [x, y],
-                render: CustomNode,
-                inputs: Array.from({length: 8}).map((_, index) => ({
-                    id: system.id + `_port${index}`,
-                })),
-                outputs: []
-            })
+            dispatch(setSystem({...system, x: x, y: y, isAssigned: true}))
+
         },
         collect: (monitor) => {
             return {
@@ -111,12 +174,8 @@ export const Diagram = ({systems, links, checks}: IDiagram) => {
         },
     }))
 
-    // useEffect(() => {
-    //
-    // }, [systems, links])
 
-    // return React.cloneElement(props.children, props)
-    return <StyledDiagram ref={ref}>
+    return <StyledDiagram ref={ref} onClick={deleteNode}>
         {/*@ts-ignore*/}
         <BeautifulDiagram schema={schema} onChange={onChange}/>
     </StyledDiagram>
@@ -134,6 +193,50 @@ const StyledDiagram = styled.figure`
     animation: BiDashSegmentAnimation 1s linear infinite !important;
     stroke: #88cdff !important;
     stroke-dasharray: 10, 2 !important;
+  }
+
+  & ${StyledNode}.success-live {
+    background: ${CHECK_COLORS['success-live']};
+  }
+
+  & ${StyledNode}.success-expired {
+    background: ${CHECK_COLORS['success-expired']};
+  }
+
+  & ${StyledNode}.fail-live {
+    background: ${CHECK_COLORS['fail-live']};
+  }
+
+  & ${StyledNode}.fail-expired {
+    background: ${CHECK_COLORS['fail-expired']};
+  }
+
+  & ${StyledNode}.not-exist {
+    background: ${CHECK_COLORS['not-exist']};
+  }
+
+  & .success-live .bi-link-path {
+    stroke: ${CHECK_COLORS['success-live']} !important;
+  }
+
+  & .success-expired .bi-link-path {
+    stroke: ${CHECK_COLORS['success-expired']} !important;
+  }
+
+  & .fail-live .bi-link-path {
+    stroke: ${CHECK_COLORS['fail-live']} !important;
+  }
+
+  & .fail-expired .bi-link-path {
+    stroke: ${CHECK_COLORS['fail-expired']} !important;
+  }
+
+  & .not-exist .bi-link-path {
+    stroke: ${CHECK_COLORS['not-exist']} !important;
+  }
+
+  & .green .bi-link-path {
+    stroke: green !important;
   }
 
   @keyframes BiDashSegmentAnimation {
