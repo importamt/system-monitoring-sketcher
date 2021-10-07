@@ -1,6 +1,6 @@
 import {createAction} from "@reduxjs/toolkit";
-import {getAsyncActions} from "../../utils";
 import {Check} from "./index";
+import {getAsyncActions} from "../../functions/getAsyncActions";
 
 const prefix = 'check'
 export const SET_CHECKS = `${prefix}/SET_CHECKS`

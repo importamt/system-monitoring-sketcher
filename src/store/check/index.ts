@@ -3,15 +3,14 @@ import {CheckApi} from "./check-api";
 export enum CheckStatus {
     SUCCESS = 'SUCCESS',
     FAIL = 'FAIL',
-    EXPIRED = 'EXPIRED',
-    NO_RECORDS = 'NO_RECORDS',
 }
 
 export interface Check {
     id: string,
     sourceId: string,
     targetId: string,
-    status: CheckStatus
+    status: CheckStatus,
+    checkTime: number
 }
 
 export * from './check-action'

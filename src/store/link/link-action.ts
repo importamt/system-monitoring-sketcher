@@ -1,6 +1,6 @@
 import {createAction} from "@reduxjs/toolkit";
 import {Link} from ".";
-import {getAsyncActions} from "../../utils";
+import {getAsyncActions} from "../../functions/getAsyncActions";
 
 
 const prefix = 'link'

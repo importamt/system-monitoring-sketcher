@@ -1,6 +1,6 @@
 import {createAction} from "@reduxjs/toolkit";
 import {System} from ".";
-import {getAsyncActions} from "../../utils";
+import {getAsyncActions} from "../../functions/getAsyncActions";
 
 const prefix = 'system'
 export const SET_SYSTEMS = `${prefix}/SET_SYSTEMS`
@@ -20,6 +20,6 @@ export const registerSystemSuccess = createAction(REGISTER_SYSTEM.success)
 export const registerSystemFail = createAction<any>(REGISTER_SYSTEM.fail)
 
 export const REGISTER_SYSTEMS = getAsyncActions(`${prefix}/REGISTER_SYSTEMS`)
-export const registerSystemsRequest = createAction<System>(REGISTER_SYSTEMS.request)
+export const registerSystemsRequest = createAction<System[]>(REGISTER_SYSTEMS.request)
 export const registerSystemsSuccess = createAction(REGISTER_SYSTEMS.success)
 export const registerSystemsFail = createAction<any>(REGISTER_SYSTEMS.fail)
