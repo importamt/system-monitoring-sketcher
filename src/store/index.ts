@@ -4,10 +4,13 @@ import createSagaMiddleware from "redux-saga";
 import {SystemReducer, SystemSaga} from "./system";
 import {LinkReducer, LinkSaga} from "./link";
 import {CheckReducer, CheckSaga} from "./check";
+import {CommonReducer} from "./view/common";
 
-// const viewReducer = combineReducers({})
+const viewReducer = combineReducers({
+    common: CommonReducer
+})
 const rootReducer = combineReducers({
-    // view: viewReducer,
+    view: viewReducer,
     system: SystemReducer,
     link: LinkReducer,
     check: CheckReducer,

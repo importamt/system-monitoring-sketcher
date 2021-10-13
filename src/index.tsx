@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom";
-import React, {createContext} from "react";
+import React from "react";
 import styled from "styled-components";
 import {Modifying, Monitoring} from "./pages";
 import {GlobalStyles} from "./styles";
@@ -10,6 +10,7 @@ import {DndProvider} from "react-dnd";
 import {registerSystemsRequest, SystemApiInstance} from "./store/system";
 import {Check, CheckApiInstance} from "./store/check";
 import {Link, LinkApiInstance, registerLinksRequest} from "./store/link";
+import {setMonitoring} from "./store/view/common";
 
 interface IStyledSystemMonitoringSketcher {
     width: number | string,
@@ -29,8 +30,6 @@ export interface SystemMonitoringSketcherOptions extends IStyledSystemMonitoring
 }
 
 const store = createStore()
-export const IsMonitoringContext = createContext<boolean>(true)
-
 const SystemMonitoringSketcher = (elementId: string, {
     retrieveSystems,
     registerSystem,
@@ -43,6 +42,8 @@ const SystemMonitoringSketcher = (elementId: string, {
     height,
     isMonitoring = true,
 }: SystemMonitoringSketcherOptions) => {
+
+
     const calculatedWidth = typeof width === 'number' ? `${width}px` : width ? width : '100%'
     const calculatedHeight = typeof height === 'number' ? `${height}px` : height ? height : '100%'
 
@@ -56,17 +57,16 @@ const SystemMonitoringSketcher = (elementId: string, {
 
     CheckApiInstance.retrieveChecks = retrieveChecks
 
+    store.dispatch(setMonitoring(isMonitoring))
 
     ReactDOM.render(
         <Provider store={store}>
             <DndProvider backend={HTML5Backend}>
-                <IsMonitoringContext.Provider value={isMonitoring}>
-                    <StyledSystemMonitoringSketcher
-                        width={calculatedWidth} height={calculatedHeight}>
-                        <GlobalStyles/>
-                        {isMonitoring ? <Monitoring/> : <Modifying/>}
-                    </StyledSystemMonitoringSketcher>
-                </IsMonitoringContext.Provider>
+                <StyledSystemMonitoringSketcher
+                    width={calculatedWidth} height={calculatedHeight}>
+                    <GlobalStyles/>
+                    {isMonitoring ? <Monitoring/> : <Modifying/>}
+                </StyledSystemMonitoringSketcher>
             </DndProvider>
         </Provider>
         , document.getElementById(elementId))

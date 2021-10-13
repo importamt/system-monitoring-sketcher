@@ -58,6 +58,7 @@
         return [...links]
     }
     const registerLink = async newLink => {
+        console.log("registerLink", newLink)
         const getSameId = link => link.id === newLink.id
         const link = links.find(getSameId)
         if (link) {
@@ -67,6 +68,7 @@
         }
     }
     const registerLinks = async newLinks => {
+        console.log("registerLinks", newLinks)
         newLinks?.forEach(newLink => registerLink(newLink))
     }
 
