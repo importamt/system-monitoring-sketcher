@@ -14,6 +14,11 @@ export const Monitoring = () => {
         dispatch(retrieveSystemsRequest())
         dispatch(retrieveLinksRequest())
         dispatch(retrieveChecksRequest())
+        setInterval(() => {
+            dispatch(retrieveSystemsRequest())
+            dispatch(retrieveLinksRequest())
+            dispatch(retrieveChecksRequest())
+        }, 10 * 1000)
     })
 
     const systems = useSelector((state: RootState) => state.system.systems)
