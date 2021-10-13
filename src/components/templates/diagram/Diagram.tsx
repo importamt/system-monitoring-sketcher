@@ -1,20 +1,19 @@
-import React, {useContext, useEffect, useRef} from "react";
+import React, {useEffect, useRef} from "react";
 import styled from "styled-components";
 import 'beautiful-react-diagrams/styles.css';
 import {Diagram as BeautifulDiagram, useSchema} from 'beautiful-react-diagrams';
-import {System} from "../../../store";
+import {RootState, System} from "../../../store";
 import {useDrop} from "react-dnd";
 import {Link, setLinks} from "../../../store/link";
 import {Check} from "../../../store/check";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {setSystem} from "../../../store/system";
 import {CustomNode} from "../../molecules";
-import {useMount} from "../../../hooks";
 import {DiagramSchema} from "beautiful-react-diagrams/@types/DiagramSchema";
 import {useDebounce} from "../../../hooks/debounce";
-import {IsMonitoringContext} from "../../../index";
 import {CHECK_COLORS, getCheckColor} from "../../../functions/getCheckColor";
 import {StyledNode} from "../../molecules/custom-node/CustomNode";
+import {setScreenSize} from "../../../store/view/common";
 
 export interface IDiagram {
     systems?: System[],
@@ -28,7 +27,9 @@ const initialSchema = {
 } as DiagramSchema<System>
 
 export const Diagram = ({systems, links, checks}: IDiagram) => {
-    const isMonitoring = useContext(IsMonitoringContext)
+    const isMonitoring = useSelector((state: RootState) => state.view.common.isMonitoring)
+    const screenWidth = useSelector((state: RootState) => state.view.common.width)
+    const screenHeight = useSelector((state: RootState) => state.view.common.height)
     const dispatch = useDispatch()
 
     //useRef를 통해 ref값을 직접 정의하고 react-dnd의 drop함수를 적용한다.
@@ -50,12 +51,21 @@ export const Diagram = ({systems, links, checks}: IDiagram) => {
             dispatch(setSystem({...system, x: 0, y: 0, isAssigned: false}))
         }
     }
-    useMount(() => {
-        //Drag and Drop의 Drop 설정
-        if (!isMonitoring) {
-            drop(ref)
+
+    useEffect(() => {
+        if (ref) {
+            if (!isMonitoring) {
+                drop(ref)
+
+                const diagramOffset = ref.current?.getBoundingClientRect()
+                console.log("diagramOffset", diagramOffset)
+                dispatch(setScreenSize({
+                    width: diagramOffset!.width,
+                    height: diagramOffset!.height,
+                }))
+            }
         }
-    })
+    }, [ref])
 
     const [schema, {onChange}] = useSchema(initialSchema)
     const debouncedSchema: DiagramSchema<System> = useDebounce(schema, 500)
@@ -79,8 +89,8 @@ export const Diagram = ({systems, links, checks}: IDiagram) => {
             ) {
                 dispatch(setSystem({
                     ...system,
-                    x: changedSystem.x,
-                    y: changedSystem.y,
+                    x: changedSystem.x < 0 ? 0 : changedSystem.x > screenWidth ? screenWidth - 210 : changedSystem.x,
+                    y: changedSystem.y < 0 ? 0 : changedSystem.y > screenHeight ? screenHeight - 110 : changedSystem.y,
                     url: changedSystem.url,
                 }))
             }
