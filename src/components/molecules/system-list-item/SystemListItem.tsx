@@ -29,8 +29,10 @@ const StyledSystemListItem = styled.li<ISystemListItem>`
 
   min-width: 100px;
   width: 100%;
-  min-height: 100px;
+  min-height: 80px;
   height: 10%;
+  border-radius: 10px;
+  font-size: 12px;
 
   color: ${({system}) => system ? 'white' : 'transparent'};
   background: #777777;
