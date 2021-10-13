@@ -1,18 +1,32 @@
 import styled from "styled-components";
 import {Node} from "beautiful-react-diagrams/@types/DiagramSchema";
-import {System} from "../../../store";
-import React, {useContext} from "react";
-import {IsMonitoringContext} from "../../../index";
+import {RootState, System} from "../../../store";
+import React, {ChangeEvent, useEffect, useState} from "react";
+import {useDebounce} from "../../../hooks/debounce";
+import {useDispatch, useSelector} from "react-redux";
+import {setSystem} from "../../../store/system";
 
 export const CustomNode = ({inputs, content, className, data}: Omit<Node<System>, 'coordinates'>) => {
-    const isMonitoring = useContext(IsMonitoringContext)
+    const isMonitoring = useSelector((state: RootState) => state.view.common.isMonitoring)
+    const [url, setUrl] = useState(data?.url)
+    const debouncedUrl = useDebounce(url, 250)
+    const dispatch = useDispatch()
+
+    const handleInputChange = (event: ChangeEvent<{ value: string }>) => {
+        setUrl(event.target.value)
+    }
+
+    useEffect(() => {
+        dispatch(setSystem({...data!, url: debouncedUrl}))
+    }, [debouncedUrl])
 
     return <StyledNode className={className}>
 
         {content}
         {inputs}
 
-        { !isMonitoring && <button data-system-id={data?.id} className={'delete'}>x</button>}
+        {!isMonitoring && <button data-system-id={data?.id} className={'delete'}>x</button>}
+        {!isMonitoring && <input onChange={handleInputChange} value={url}/>}
     </StyledNode>
 }
 
@@ -20,13 +34,14 @@ export const StyledNode = styled.figure`
   background: #dae1e7;
   border-radius: .25rem;
   padding: .5rem;
-  
+
   width: 200px;
   height: 100px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  
+
   & > button.delete {
     cursor: pointer;
     display: flex;
@@ -35,20 +50,20 @@ export const StyledNode = styled.figure`
     font-size: 20px;
     right: 20px;
     top: 20px;
-    
+
     width: 1em;
     height: 1em;
     border-radius: 20px;
     border: none;
     position: absolute;
   }
-  
+
   & div.bi-diagram-port {
     width: 1.25rem;
     height: 1.25rem;
-    
+
     background: #0000000F;
-    
+
     position: absolute;
   }
 
