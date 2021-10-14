@@ -8,12 +8,12 @@ export const CHECK_COLORS = {
     'not-exist': '#636363',
 }
 
-export const getCheckColor = (now: number, check?: Check): string => {
+export const getCheckColor = (now: number, delay: number, check?: Check, ): string => {
     let color = ''
     if (check) {
         if (check.status === 'SUCCESS') {
 
-            if (now - check.checkTime < 1000 * 60 * 30) {
+            if (now - check.checkTime < delay) {
                 //Success and in time
                 color = 'success-live'
             } else {
@@ -21,7 +21,7 @@ export const getCheckColor = (now: number, check?: Check): string => {
                 color = 'success-expired'
             }
         } else {
-            if (now - check.checkTime < 1000 * 60 * 30) {
+            if (now - check.checkTime < delay) {
                 //Success and in time
                 color = 'fail-live'
             } else {

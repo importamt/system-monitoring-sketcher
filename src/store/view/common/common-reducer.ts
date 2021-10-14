@@ -6,12 +6,14 @@ interface CommonState {
     isMonitoring: boolean,
     width: number,
     height: number,
+    delay: number,
 }
 
 const initialState: CommonState = {
     isMonitoring: false,
     width: 1280,
-    height: 720
+    height: 720,
+    delay: 1000 * 60
 }
 
 export const CommonReducer = createReducer(initialState, {

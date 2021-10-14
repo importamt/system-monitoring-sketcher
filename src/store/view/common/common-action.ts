@@ -9,3 +9,6 @@ export const setScreenSize = createAction<{
     width: number,
     height: number,
 }>(SET_SCREEN_SIZE)
+
+export const SET_DELAY = `${prefix}/SET_DELAY`
+export const setDelay = createAction<number>(SET_DELAY)

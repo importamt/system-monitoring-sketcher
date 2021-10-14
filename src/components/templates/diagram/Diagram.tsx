@@ -28,6 +28,7 @@ const initialSchema = {
 
 export const Diagram = ({systems, links, checks}: IDiagram) => {
     const isMonitoring = useSelector((state: RootState) => state.view.common.isMonitoring)
+    const delay = useSelector((state: RootState) => state.view.common.delay)
     const screenWidth = useSelector((state: RootState) => state.view.common.width)
     const screenHeight = useSelector((state: RootState) => state.view.common.height)
     const dispatch = useDispatch()
@@ -104,7 +105,7 @@ export const Diagram = ({systems, links, checks}: IDiagram) => {
             return {sourceId, targetId} as Link
         })
         const filteredLinks = Object.values(changedLinks.reduce((links, link) => {
-            links[link.sourceId+link.targetId] = link
+            links[link.sourceId + link.targetId] = link
             return links
         }, {} as { [key: string]: Link }))
 
@@ -130,7 +131,7 @@ export const Diagram = ({systems, links, checks}: IDiagram) => {
             links: links ?
                 links?.map(link => {
                     const check = checkMap ? checkMap[link.sourceId + link.targetId] : undefined
-                    const color = isMonitoring ? getCheckColor(now.getTime(), check) : ''
+                    const color = isMonitoring ? getCheckColor(now.getTime(), delay, check) : ''
                     return {
                         input: link.sourceId,
                         output: link.targetId,
@@ -142,7 +143,7 @@ export const Diagram = ({systems, links, checks}: IDiagram) => {
             nodes: systems ?
                 systems.map(system => {
                     const check = checkMap ? checkMap[system.systemId + system.systemId] : undefined
-                    const color = isMonitoring ? getCheckColor(now.getTime(), check) : ''
+                    const color = isMonitoring ? getCheckColor(now.getTime(), delay, check) : ''
                     return {
                         id: system.systemId,
                         disableDrag: isMonitoring,

@@ -10,7 +10,7 @@ import {DndProvider} from "react-dnd";
 import {registerSystemsRequest, SystemApiInstance} from "./store/system";
 import {Check, CheckApiInstance} from "./store/check";
 import {Link, LinkApiInstance, registerLinksRequest} from "./store/link";
-import {setMonitoring} from "./store/view/common";
+import {setDelay, setMonitoring} from "./store/view/common";
 
 interface IStyledSystemMonitoringSketcher {
     width: number | string,
@@ -21,6 +21,8 @@ export interface SystemMonitoringSketcherOptions extends IStyledSystemMonitoring
     retrieveSystems: () => System[],
     registerSystem: (systems: System) => void,
     registerSystems: (systems: System[]) => void,
+
+    delay: number,
 
     retrieveChecks: () => Check[],
     retrieveLinks: () => Link[],
@@ -40,6 +42,7 @@ const SystemMonitoringSketcher = (elementId: string, {
     retrieveChecks,
     width,
     height,
+    delay = 1000 * 60,
     isMonitoring = true,
 }: SystemMonitoringSketcherOptions) => {
 
@@ -58,6 +61,7 @@ const SystemMonitoringSketcher = (elementId: string, {
     CheckApiInstance.retrieveChecks = retrieveChecks
 
     store.dispatch(setMonitoring(isMonitoring))
+    store.dispatch(setDelay(delay))
 
     ReactDOM.render(
         <Provider store={store}>
