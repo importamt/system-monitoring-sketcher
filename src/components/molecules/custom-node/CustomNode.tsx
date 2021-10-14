@@ -25,7 +25,7 @@ export const CustomNode = ({inputs, content, className, data}: Omit<Node<System>
         {content}
         {inputs}
 
-        {!isMonitoring && <button data-system-id={data?.id} className={'delete'}>x</button>}
+        {!isMonitoring && <button data-system-id={data?.systemId} className={'delete'}>x</button>}
         {!isMonitoring && <input onChange={handleInputChange} value={url}/>}
     </StyledNode>
 }

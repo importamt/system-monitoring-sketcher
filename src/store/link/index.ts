@@ -1,8 +1,6 @@
 import {LinkApi} from "./link-api";
 
 export interface Link {
-    id: string,
-
     sourceId: string,
     targetId: string
 }

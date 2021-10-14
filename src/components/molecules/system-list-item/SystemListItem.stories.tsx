@@ -14,7 +14,7 @@ const Template: Story<ISystemListItem> = args => <div style={RESOLUTION_TINY}>
 export const Default = Template.bind({})
 Default.args = {
     system: {
-        id: 'abc',
+        systemId: 'abc',
         name: 'HELLO',
         url: 'https://google.com',
         x: 10,

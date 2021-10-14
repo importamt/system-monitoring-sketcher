@@ -1,7 +1,6 @@
 import {ISystemList, SystemList} from "./SystemList";
 import {Meta, Story} from "@storybook/react";
 import {RESOLUTION_SD} from "../../../utils";
-import {GlobalStyles} from "../../../styles";
 
 
 export default {
@@ -16,21 +15,21 @@ const Template: Story<ISystemList> = args => <div style={RESOLUTION_SD}>
 export const Default = Template.bind({})
 Default.args = {
     systems: [{
-        id: 'abc1',
+        systemId: 'abc1',
         name: 'HELLO1',
         url: 'https://google.com',
         x: 10,
         y: 50,
         isAssigned: true
     }, {
-        id: 'abc2',
+        systemId: 'abc2',
         name: 'HELLO2',
         url: 'https://google.com',
         x: 10,
         y: 50,
         isAssigned: true
     }, {
-        id: 'abc3',
+        systemId: 'abc3',
         name: 'HELLO3',
         url: 'https://google.com',
         x: 10,

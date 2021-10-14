@@ -14,7 +14,7 @@ export const SystemReducer = createReducer(initialState, {
     },
     [SET_SYSTEM]: (state: SystemState, action: PayloadAction<System>) => {
         const newSystem = action.payload
-        state.systems = state.systems?.map(system => system.id === newSystem.id ?
+        state.systems = state.systems?.map(system => system.systemId === newSystem.systemId ?
             newSystem : system
         )
     },

@@ -9,7 +9,7 @@ export interface ISystemList {
 export const SystemList = ({systems}: ISystemList) => {
     return <StyledSystemList>
         {
-            systems ? systems.map(system => <SystemListItem key={system.id} system={system}/>) :
+            systems ? systems.map(system => <SystemListItem key={system.systemId} system={system}/>) :
                 Array.from({length: 15}).map((_, index) => <SystemListItem key={index}/>)
         }
     </StyledSystemList>

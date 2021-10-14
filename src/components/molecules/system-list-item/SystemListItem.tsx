@@ -19,7 +19,7 @@ export const SystemListItem = ({system}: ISystemListItem) => {
 
     return <StyledSystemListItem system={system} ref={drag}>
         <h1>{system?.name}</h1>
-        <small>{system ? 'ID: ' + system.id : null}</small>
+        <small>{system ? 'ID: ' + system.systemId : null}</small>
         <small>{system ? 'URL: ' + system.url : null}</small>
     </StyledSystemListItem>
 }

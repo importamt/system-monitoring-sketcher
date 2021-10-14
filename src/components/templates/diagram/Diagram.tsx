@@ -42,11 +42,11 @@ export const Diagram = ({systems, links, checks}: IDiagram) => {
         if (deleteButton.tagName !== 'BUTTON') return
         const systemId = deleteButton.dataset.systemId
 
-        const system = systems.find(system => system.id === systemId)
+        const system = systems.find(system => system.systemId === systemId)
 
         if (system) {
             links && dispatch(setLinks(
-                links.filter(link => link.targetId !== system.id && link.sourceId !== system.id)
+                links.filter(link => link.targetId !== system.systemId && link.sourceId !== system.systemId)
             ))
             dispatch(setSystem({...system, x: 0, y: 0, isAssigned: false}))
         }
@@ -76,12 +76,12 @@ export const Diagram = ({systems, links, checks}: IDiagram) => {
             x: node.coordinates[0],
             y: node.coordinates[1]
         })).reduce((systemMap, system: System) => {
-            systemMap[system.id] = system
+            systemMap[system.systemId] = system
             return systemMap
         }, {} as { [key: string]: System })
 
         systems?.forEach(system => {
-            const changedSystem = systemMap[system.id]
+            const changedSystem = systemMap[system.systemId]
             if (
                 changedSystem.x !== system.x ||
                 changedSystem.y !== system.y ||
@@ -100,18 +100,17 @@ export const Diagram = ({systems, links, checks}: IDiagram) => {
 
             const sourceId = link.input.split("_port")[0]
             const targetId = link.output.split("_port")[0]
-            const id = sourceId + targetId
 
-            return {id, sourceId, targetId} as Link
+            return {sourceId, targetId} as Link
         })
         const filteredLinks = Object.values(changedLinks.reduce((links, link) => {
-            links[link.id] = link
+            links[link.sourceId+link.targetId] = link
             return links
         }, {} as { [key: string]: Link }))
 
         if (links) {
             const intersectionBetweenChangedLinksAndLinks =
-                links.filter(link => changedLinks.some(changedLink => link.id === changedLink.id))
+                links.filter(link => changedLinks.some(changedLink => link.sourceId === changedLink.sourceId && link.targetId === changedLink.targetId))
             if (intersectionBetweenChangedLinksAndLinks.length !== links.length ||
                 intersectionBetweenChangedLinksAndLinks.length !== changedLinks.length) {
                 dispatch(setLinks(filteredLinks))
@@ -142,10 +141,10 @@ export const Diagram = ({systems, links, checks}: IDiagram) => {
                 : [],
             nodes: systems ?
                 systems.map(system => {
-                    const check = checkMap ? checkMap[system.id + system.id] : undefined
+                    const check = checkMap ? checkMap[system.systemId + system.systemId] : undefined
                     const color = isMonitoring ? getCheckColor(now.getTime(), check) : ''
                     return {
-                        id: system.id,
+                        id: system.systemId,
                         disableDrag: isMonitoring,
                         content: system.name,
                         coordinates: [system.x, system.y],
@@ -153,7 +152,7 @@ export const Diagram = ({systems, links, checks}: IDiagram) => {
                         className: color,
                         data: system,
                         inputs: isMonitoring ? [] : Array.from({length: 8}).map((_, index) => ({
-                            id: system.id + `_port_${index}`,
+                            id: system.systemId + `_port_${index}`,
                         })),
                         outputs: []
                     }

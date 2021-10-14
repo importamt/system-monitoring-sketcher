@@ -2,7 +2,7 @@ import {SystemApi} from "./system-api";
 
 
 export interface System {
-    id: string,
+    systemId: string,
     name: string,
 
     //http url for checking system

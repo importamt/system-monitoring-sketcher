@@ -21,7 +21,7 @@
     const LINKS_COUNT = 10
 
     let systems = Array.from({length: SYSTEMS_COUNT}).map((_, index) => ({
-        id: `system_id_${index}`,
+        systemId: `system_id_${index}`,
         name: `system_${index}`,
         url: 'https://google.com',
         x: Math.floor(Math.random() * 1000),
@@ -32,16 +32,16 @@
         return [...systems]
     }
     const registerSystem = async newSystem => {
-        const getSameId = system => system.id === newSystem.id
+        const getSameId = system => system.systemId === newSystem.systemId
         const system = systems.find(getSameId)
         if (system) {
-            systems = [...systems.filter(system => system.id !== newSystem.id), newSystem]
+            systems = [...systems.filter(system => system.systemId !== newSystem.systemId), newSystem]
         } else {
             systems = [...systems, newSystem]
         }
     }
     const registerSystems = async newSystems => {
-        console.log("BEF", newSystems)
+        console.log("REG", newSystems)
         newSystems.forEach(newSystem => registerSystem(newSystem))
     }
 
@@ -51,18 +51,18 @@
     const shuffledSystems = shuffle(systems?.filter(system => system.isAssigned === true))
     let links = Array.from({length: shuffledSystems.length}).map((_, index) => ({
         id: `link_id_${index}`,
-        sourceId: shuffledSystems[index].id,
-        targetId: shuffledSystems[shuffledSystems.length - 1 > index ? index + 1 : 0].id
+        sourceId: shuffledSystems[index].systemId,
+        targetId: shuffledSystems[shuffledSystems.length - 1 > index ? index + 1 : 0].systemId
     }))
     const retrieveLinks = async () => {
         return [...links]
     }
     const registerLink = async newLink => {
         console.log("registerLink", newLink)
-        const getSameId = link => link.id === newLink.id
+        const getSameId = link => link.sourceId === newLink.sourceId && link.targetId === newLink.targetId
         const link = links.find(getSameId)
         if (link) {
-            links = [...links.filter(link => link.id !== newLink.id), newLink]
+            links = [...links.filter(link => (link.sourceId !== newLink.sourceId && link.targetId !== newLink.targetId)), newLink]
         } else {
             links = [...links, newLink]
         }
