@@ -1,17 +1,18 @@
-import {Check, CheckStatus} from "../store/check";
+import {Check} from "../store/check";
 
 export const CHECK_COLORS = {
-    'success-live': '#09ce19',
-    'success-expired': '#056f0e',
-    'fail-live': '#ce0909',
-    'fail-expired': '#860d0d',
+    'success-live': '#29de39',
+    'success-expired': '#254f2e',
+    'fail-live': '#fe3939',
+    'fail-expired': '#662d2d',
     'not-exist': '#636363',
 }
 
 export const getCheckColor = (now: number, check?: Check): string => {
     let color = ''
     if (check) {
-        if (check.status === CheckStatus.SUCCESS) {
+        if (check.status === 'SUCCESS') {
+
             if (now - check.checkTime < 1000 * 60 * 30) {
                 //Success and in time
                 color = 'success-live'
