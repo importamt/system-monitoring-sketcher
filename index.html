@@ -82,8 +82,8 @@
         //systems
         Array.from({length: SYSTEMS_COUNT}).map((_, index) => ({
             id: `check_id_${index}`,
-            sourceId: systems[index].id,
-            targetId: systems[index].id,
+            sourceId: systems[index].systemId,
+            targetId: systems[index].systemId,
             isSystem: true,
             checkTime: new Date().getTime(),
             status: CheckStatus[Math.floor(Math.random() * CheckStatus.length)]
@@ -107,7 +107,7 @@
         const myInstance = SystemMonitoringSketcher('sketcher-root', {
             width: 1280,
             height: 720,
-            isMonitoring: false,
+            isMonitoring: true,
             retrieveSystems: retrieveSystems,
             registerSystem: registerSystem,
             registerSystems: registerSystems,
